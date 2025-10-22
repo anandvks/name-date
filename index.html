@@ -106,6 +106,59 @@
             </div>
         </div>
 
+        <!-- SUGGEST VIEW -->
+        <div id="suggest-view" class="view">
+            <div class="matches-container">
+                <div class="matches-header">
+                    <h2 class="matches-title">Suggest a Name ✨</h2>
+                    <p class="matches-subtitle">Add new names to the pool!</p>
+                </div>
+                <div class="suggest-form-container">
+                    <form id="suggest-form" class="suggest-form">
+                        <div class="form-group">
+                            <label for="name-input" class="form-label">Name</label>
+                            <input
+                                type="text"
+                                id="name-input"
+                                class="form-input"
+                                placeholder="Enter a name..."
+                                required
+                                autocomplete="off"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="male" required />
+                                    <span class="radio-custom male">Male</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="female" required />
+                                    <span class="radio-custom female">Female</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="unisex" required />
+                                    <span class="radio-custom unisex">Unisex</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add Name</button>
+                    </form>
+
+                    <div id="custom-names-list" class="custom-names-section">
+                        <h3 class="custom-names-title">Your Custom Names</h3>
+                        <div id="custom-names-container" class="custom-names-container"></div>
+                        <div id="custom-names-placeholder" class="matches-placeholder">
+                            <p style="font-size: 0.875rem; opacity: 0.7;">No custom names added yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- NAV BAR -->
         <nav id="nav-bar" class="nav-bar">
             <button id="nav-swipe-btn" class="nav-btn active">
@@ -120,6 +173,12 @@
                 </svg>
                 <span class="nav-label">Matches</span>
             </button>
+            <button id="nav-suggest-btn" class="nav-btn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span class="nav-label">Suggest</span>
+            </button>
         </nav>
 
         <!-- MODAL -->
@@ -130,33 +189,56 @@
 
     <script>
         // ===== NAMES DATABASE (Original + Indian-German) =====
-        const NAMES = [
-            // Original English names (keeping a subset for brevity)
+        const DEFAULT_NAMES = [
+            // Original English names
             { name: 'Olivia', gender: 'female' }, { name: 'Emma', gender: 'female' }, { name: 'Ava', gender: 'female' },
             { name: 'Charlotte', gender: 'female' }, { name: 'Sophia', gender: 'female' }, { name: 'Amelia', gender: 'female' },
+            { name: 'Isabella', gender: 'female' }, { name: 'Mia', gender: 'female' }, { name: 'Evelyn', gender: 'female' },
+            { name: 'Harper', gender: 'female' }, { name: 'Luna', gender: 'female' }, { name: 'Ella', gender: 'female' },
+
             { name: 'Liam', gender: 'male' }, { name: 'Noah', gender: 'male' }, { name: 'Oliver', gender: 'male' },
             { name: 'Elijah', gender: 'male' }, { name: 'James', gender: 'male' }, { name: 'William', gender: 'male' },
+            { name: 'Benjamin', gender: 'male' }, { name: 'Lucas', gender: 'male' }, { name: 'Henry', gender: 'male' },
+            { name: 'Alexander', gender: 'male' }, { name: 'Mason', gender: 'male' }, { name: 'Ethan', gender: 'male' },
 
-            // Indian-German Compatible Names
+            // Indian-German Compatible Names - Unisex
             { name: 'Ari', gender: 'unisex' }, { name: 'Kiran', gender: 'unisex' }, { name: 'Maya', gender: 'unisex' },
-            { name: 'Nila', gender: 'unisex' }, { name: 'Ravi', gender: 'unisex' },
+            { name: 'Nila', gender: 'unisex' }, { name: 'Ravi', gender: 'unisex' }, { name: 'Sasha', gender: 'unisex' },
+            { name: 'Nova', gender: 'unisex' }, { name: 'Eden', gender: 'unisex' }, { name: 'Indra', gender: 'unisex' },
+            { name: 'Sky', gender: 'unisex' },
 
+            // Indian-German Compatible - Boys
             { name: 'Amir', gender: 'male' }, { name: 'Arjun', gender: 'male' }, { name: 'Dev', gender: 'male' },
             { name: 'Johan', gender: 'male' }, { name: 'Karan', gender: 'male' }, { name: 'Leon', gender: 'male' },
             { name: 'Milan', gender: 'male' }, { name: 'Neel', gender: 'male' }, { name: 'Omar', gender: 'male' },
             { name: 'Rohan', gender: 'male' }, { name: 'Sameer', gender: 'male' }, { name: 'Yash', gender: 'male' },
+            { name: 'Aarav', gender: 'male' }, { name: 'Vihaan', gender: 'male' }, { name: 'Nico', gender: 'male' },
+            { name: 'Felix', gender: 'male' }, { name: 'Finn', gender: 'male' }, { name: 'Lukas', gender: 'male' },
+            { name: 'Milo', gender: 'male' }, { name: 'Soren', gender: 'male' }, { name: 'Kai', gender: 'male' },
+            { name: 'Luca', gender: 'male' }, { name: 'Elias', gender: 'male' }, { name: 'Emil', gender: 'male' },
+            { name: 'Naveen', gender: 'male' }, { name: 'Nikhil', gender: 'male' }, { name: 'Rajiv', gender: 'male' },
+            { name: 'Sahil', gender: 'male' }, { name: 'Tarun', gender: 'male' }, { name: 'Vivaan', gender: 'male' },
 
+            // Indian-German Compatible - Girls
             { name: 'Alina', gender: 'female' }, { name: 'Amara', gender: 'female' }, { name: 'Devi', gender: 'female' },
             { name: 'Elena', gender: 'female' }, { name: 'Freya', gender: 'female' }, { name: 'Gita', gender: 'female' },
             { name: 'Isha', gender: 'female' }, { name: 'Kaya', gender: 'female' }, { name: 'Lara', gender: 'female' },
             { name: 'Mira', gender: 'female' }, { name: 'Nina', gender: 'female' }, { name: 'Priya', gender: 'female' },
-            { name: 'Sana', gender: 'female' }, { name: 'Tara', gender: 'female' }, { name: 'Zara', gender: 'female' }
+            { name: 'Sana', gender: 'female' }, { name: 'Tara', gender: 'female' }, { name: 'Zara', gender: 'female' },
+            { name: 'Aanya', gender: 'female' }, { name: 'Anaya', gender: 'female' }, { name: 'Aria', gender: 'female' },
+            { name: 'Clara', gender: 'female' }, { name: 'Emilia', gender: 'female' }, { name: 'Hannah', gender: 'female' },
+            { name: 'Kiara', gender: 'female' }, { name: 'Leela', gender: 'female' }, { name: 'Leila', gender: 'female' },
+            { name: 'Lila', gender: 'female' }, { name: 'Lina', gender: 'female' }, { name: 'Mila', gender: 'female' },
+            { name: 'Naomi', gender: 'female' }, { name: 'Nora', gender: 'female' }, { name: 'Rina', gender: 'female' },
+            { name: 'Sara', gender: 'female' }, { name: 'Sia', gender: 'female' }, { name: 'Simone', gender: 'female' },
+            { name: 'Stella', gender: 'female' }, { name: 'Vera', gender: 'female' }, { name: 'Zoe', gender: 'female' }
         ];
 
         // ===== STATE =====
         let currentParent = 'parent1';
         let swipes = {}; // { name: { parent1: 'like', parent2: 'dislike' } }
-        let currentNameIndex = 0;
+        let customNames = []; // User-added names
+        let NAMES = []; // Combined default + custom names
 
         // ===== UTILS =====
         function showView(viewId) {
@@ -186,10 +268,24 @@
         function loadData() {
             const saved = localStorage.getItem('namedate_swipes');
             if (saved) swipes = JSON.parse(saved);
+
+            const savedCustomNames = localStorage.getItem('namedate_custom_names');
+            if (savedCustomNames) customNames = JSON.parse(savedCustomNames);
+
+            mergeNames();
         }
 
         function saveData() {
             localStorage.setItem('namedate_swipes', JSON.stringify(swipes));
+        }
+
+        function saveCustomNames() {
+            localStorage.setItem('namedate_custom_names', JSON.stringify(customNames));
+            mergeNames();
+        }
+
+        function mergeNames() {
+            NAMES = [...DEFAULT_NAMES, ...customNames];
         }
 
         // ===== PARENT SWITCHER =====
@@ -296,6 +392,73 @@
             `).join('');
         }
 
+        // ===== SUGGEST NAMES =====
+        function handleSuggestSubmit(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('name-input');
+            const genderInput = document.querySelector('input[name="gender"]:checked');
+
+            const newName = nameInput.value.trim();
+            const gender = genderInput.value;
+
+            // Check if name already exists
+            const allNames = [...DEFAULT_NAMES, ...customNames];
+            if (allNames.some(n => n.name.toLowerCase() === newName.toLowerCase())) {
+                showModal('Already Exists', `"${newName}" is already in the list!`);
+                return;
+            }
+
+            // Add to custom names
+            customNames.push({ name: newName, gender: gender });
+            saveCustomNames();
+
+            // Clear form
+            nameInput.value = '';
+            genderInput.checked = false;
+
+            // Show success
+            showModal('Added! ✨', `"${newName}" has been added to the pool!`);
+
+            // Render custom names list
+            renderCustomNames();
+        }
+
+        function renderCustomNames() {
+            const container = document.getElementById('custom-names-container');
+            const placeholder = document.getElementById('custom-names-placeholder');
+
+            if (customNames.length === 0) {
+                container.innerHTML = '';
+                placeholder.classList.remove('hidden');
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+            container.innerHTML = customNames.map((n, idx) => `
+                <div class="match-item">
+                    <div class="match-item-content">
+                        <div class="match-item-left">
+                            <span class="match-item-name">${n.name}</span>
+                            <span class="gender-badge ${n.gender}">${n.gender}</span>
+                        </div>
+                        <button class="btn-icon" onclick="deleteCustomName(${idx})" title="Delete">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteCustomName(index) {
+            const name = customNames[index];
+            customNames.splice(index, 1);
+            saveCustomNames();
+            renderCustomNames();
+            showModal('Removed', `"${name.name}" has been removed.`);
+        }
+
         // ===== INIT =====
         loadData();
 
@@ -319,9 +482,18 @@
         document.getElementById('nav-matches-btn').onclick = () => {
             showView('matches');
             renderMatches();
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('nav-matches-btn').classList.add('active');
-            document.getElementById('nav-swipe-btn').classList.remove('active');
         };
+
+        document.getElementById('nav-suggest-btn').onclick = () => {
+            showView('suggest');
+            renderCustomNames();
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('nav-suggest-btn').classList.add('active');
+        };
+
+        document.getElementById('suggest-form').onsubmit = handleSuggestSubmit;
 
         document.getElementById('modal-overlay').onclick = (e) => {
             if (e.target.id === 'modal-overlay') hideModal();

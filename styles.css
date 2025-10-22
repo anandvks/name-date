@@ -681,6 +681,122 @@ body {
 }
 
 /* ============================================
+   SUGGEST FORM & RADIO BUTTONS
+   ============================================ */
+.suggest-form-container {
+    width: 100%;
+    max-width: 32rem;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.suggest-form {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+}
+
+.radio-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    position: relative;
+    cursor: pointer;
+    flex: 1;
+    min-width: calc(33.333% - 0.5rem);
+}
+
+.radio-label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.radio-custom {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid var(--lavender-light);
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    background: var(--white);
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom.male {
+    background: var(--blue-light);
+    border-color: #5B8DC4;
+    color: #5B8DC4;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom.female {
+    background: var(--rose-light);
+    border-color: #D97BA6;
+    color: #D97BA6;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom.unisex {
+    background: var(--mint-light);
+    border-color: #6BAA87;
+    color: #6BAA87;
+}
+
+.radio-custom:hover {
+    border-color: var(--lavender);
+    transform: translateY(-2px);
+}
+
+.custom-names-section {
+    margin-top: 2rem;
+}
+
+.custom-names-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.custom-names-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background: var(--rose-light);
+    color: #D97BA6;
+}
+
+/* Mobile responsive for radio buttons */
+@media (max-width: 640px) {
+    .radio-label {
+        min-width: 100%;
+    }
+}
+
+/* ============================================
    VOTING VIEW
    ============================================ */
 #voting-view {
@@ -1167,8 +1283,34 @@ body {
 
     .matches-title,
     .voting-title,
-    .suggestion-title {
+    .suggestion-title,
+    .custom-names-title {
         font-size: 1.75rem;
+    }
+
+    /* Ensure parent switcher is accessible on mobile */
+    .parent-switcher {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* Make nav labels smaller on very small screens */
+    .nav-label {
+        font-size: 0.7rem;
+    }
+
+    .nav-btn svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    /* Ensure suggest form is mobile-friendly */
+    .suggest-form {
+        padding: 1rem;
+    }
+
+    .form-input {
+        font-size: 1rem;
     }
 }
 
