@@ -1,0 +1,48 @@
+# Netlify Configuration for Name Date
+# A single-page application for collaborative baby name selection
+
+[build]
+  # No build command needed - static HTML/CSS/JS
+  publish = "."
+
+# SPA redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Don't cache HTML
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Development context (optional)
+[context.deploy-preview]
+  # Preview deployments get a special context
+  publish = "."
+
+[context.branch-deploy]
+  # Branch deployments
+  publish = "."

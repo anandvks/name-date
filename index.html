@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Date - Simple Version</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .parent-switcher {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid var(--lavender);
+            transition: all var(--transition-fast);
+        }
+        .parent-switcher:hover {
+            transform: scale(1.05);
+        }
+        .parent-switcher.parent1 {
+            background: var(--lavender-light);
+            color: var(--lavender-dark);
+        }
+        .parent-switcher.parent2 {
+            background: var(--peach-light);
+            color: var(--peach-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Parent Switcher Button -->
+    <button id="parent-switcher" class="parent-switcher parent1">
+        👤 Parent 1
+    </button>
+
+    <div class="app-container">
+        <!-- HOME VIEW -->
+        <div id="home-view" class="view active">
+            <div class="home-header">
+                <h1 class="home-title">Name Date</h1>
+                <p class="home-subtitle">Find the perfect name, together 💕</p>
+                <p style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">
+                    ✨ Simple Version - Works Offline!
+                </p>
+            </div>
+            <div class="home-button-container">
+                <button id="start-btn" class="btn btn-primary">Start Swiping!</button>
+            </div>
+        </div>
+
+        <!-- SWIPING VIEW -->
+        <div id="swiping-view" class="view">
+            <div class="swipe-container">
+                <div id="swipe-card" class="swipe-card">
+                    <div id="swipe-card-content" class="swipe-card-content">
+                        <h2 id="swipe-card-name" class="swipe-card-name">Name</h2>
+                        <span id="gender-badge" class="gender-badge unisex">Unisex</span>
+                    </div>
+                    <div id="swipe-card-placeholder" class="swipe-card-placeholder hidden">
+                        <h2>All Done! 🎉</h2>
+                        <p>You've swiped on all names. Check matches!</p>
+                    </div>
+                </div>
+
+                <div class="swipe-buttons">
+                    <button id="dislike-btn" class="swipe-btn dislike">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                    <button id="like-btn" class="swipe-btn like">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="swipe-progress">
+                    <p id="progress-text">0 / 0 names swiped</p>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MATCHES VIEW -->
+        <div id="matches-view" class="view">
+            <div class="matches-container">
+                <div class="matches-header">
+                    <h2 class="matches-title">Our Matches 💕</h2>
+                    <p class="matches-subtitle">Names you both loved!</p>
+                </div>
+                <div id="matches-list" class="matches-list"></div>
+                <div id="matches-placeholder" class="matches-placeholder">
+                    <div class="matches-placeholder-icon">💑</div>
+                    <p>No matches yet. Keep swiping!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAV BAR -->
+        <nav id="nav-bar" class="nav-bar">
+            <button id="nav-swipe-btn" class="nav-btn active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                <span class="nav-label">Swipe</span>
+            </button>
+            <button id="nav-matches-btn" class="nav-btn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="nav-label">Matches</span>
+            </button>
+        </nav>
+
+        <!-- MODAL -->
+        <div id="modal-overlay" class="modal-overlay">
+            <div id="modal" class="modal"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===== NAMES DATABASE (Original + Indian-German) =====
+        const NAMES = [
+            // Original English names (keeping a subset for brevity)
+            { name: 'Olivia', gender: 'female' }, { name: 'Emma', gender: 'female' }, { name: 'Ava', gender: 'female' },
+            { name: 'Charlotte', gender: 'female' }, { name: 'Sophia', gender: 'female' }, { name: 'Amelia', gender: 'female' },
+            { name: 'Liam', gender: 'male' }, { name: 'Noah', gender: 'male' }, { name: 'Oliver', gender: 'male' },
+            { name: 'Elijah', gender: 'male' }, { name: 'James', gender: 'male' }, { name: 'William', gender: 'male' },
+
+            // Indian-German Compatible Names
+            { name: 'Ari', gender: 'unisex' }, { name: 'Kiran', gender: 'unisex' }, { name: 'Maya', gender: 'unisex' },
+            { name: 'Nila', gender: 'unisex' }, { name: 'Ravi', gender: 'unisex' },
+
+            { name: 'Amir', gender: 'male' }, { name: 'Arjun', gender: 'male' }, { name: 'Dev', gender: 'male' },
+            { name: 'Johan', gender: 'male' }, { name: 'Karan', gender: 'male' }, { name: 'Leon', gender: 'male' },
+            { name: 'Milan', gender: 'male' }, { name: 'Neel', gender: 'male' }, { name: 'Omar', gender: 'male' },
+            { name: 'Rohan', gender: 'male' }, { name: 'Sameer', gender: 'male' }, { name: 'Yash', gender: 'male' },
+
+            { name: 'Alina', gender: 'female' }, { name: 'Amara', gender: 'female' }, { name: 'Devi', gender: 'female' },
+            { name: 'Elena', gender: 'female' }, { name: 'Freya', gender: 'female' }, { name: 'Gita', gender: 'female' },
+            { name: 'Isha', gender: 'female' }, { name: 'Kaya', gender: 'female' }, { name: 'Lara', gender: 'female' },
+            { name: 'Mira', gender: 'female' }, { name: 'Nina', gender: 'female' }, { name: 'Priya', gender: 'female' },
+            { name: 'Sana', gender: 'female' }, { name: 'Tara', gender: 'female' }, { name: 'Zara', gender: 'female' }
+        ];
+
+        // ===== STATE =====
+        let currentParent = 'parent1';
+        let swipes = {}; // { name: { parent1: 'like', parent2: 'dislike' } }
+        let currentNameIndex = 0;
+
+        // ===== UTILS =====
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId + '-view').classList.add('active');
+
+            const navBar = document.getElementById('nav-bar');
+            navBar.classList.toggle('visible', viewId === 'swiping' || viewId === 'matches');
+        }
+
+        function showModal(title, message) {
+            const modal = document.getElementById('modal');
+            modal.innerHTML = `
+                <div class="modal-header"><h2 class="modal-title">${title}</h2></div>
+                <div class="modal-content"><p class="modal-message">${message}</p></div>
+                <div class="modal-actions">
+                    <button class="btn btn-success btn-small" onclick="hideModal()">OK</button>
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('visible');
+        }
+
+        function hideModal() {
+            document.getElementById('modal-overlay').classList.remove('visible');
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('namedate_swipes');
+            if (saved) swipes = JSON.parse(saved);
+        }
+
+        function saveData() {
+            localStorage.setItem('namedate_swipes', JSON.stringify(swipes));
+        }
+
+        // ===== PARENT SWITCHER =====
+        function toggleParent() {
+            currentParent = currentParent === 'parent1' ? 'parent2' : 'parent1';
+            const btn = document.getElementById('parent-switcher');
+            btn.textContent = currentParent === 'parent1' ? '👤 Parent 1' : '👤 Parent 2';
+            btn.className = 'parent-switcher ' + currentParent;
+            renderCurrentCard();
+            updateProgress();
+        }
+
+        // ===== SWIPING =====
+        function getNextName() {
+            for (let i = 0; i < NAMES.length; i++) {
+                const name = NAMES[i].name;
+                if (!swipes[name] || !swipes[name][currentParent]) {
+                    return NAMES[i];
+                }
+            }
+            return null;
+        }
+
+        function renderCurrentCard() {
+            const next = getNextName();
+            const content = document.getElementById('swipe-card-content');
+            const placeholder = document.getElementById('swipe-card-placeholder');
+
+            if (next) {
+                document.getElementById('swipe-card-name').textContent = next.name;
+                const badge = document.getElementById('gender-badge');
+                badge.className = `gender-badge ${next.gender}`;
+                badge.textContent = next.gender.charAt(0).toUpperCase() + next.gender.slice(1);
+                content.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                content.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+        }
+
+        function handleSwipe(type) {
+            const next = getNextName();
+            if (!next) return;
+
+            if (!swipes[next.name]) swipes[next.name] = {};
+            swipes[next.name][currentParent] = type;
+            saveData();
+
+            // Animate
+            const card = document.getElementById('swipe-card');
+            const dir = type === 'like' ? 1 : -1;
+            card.style.transform = `translateX(${dir * 150}%) rotate(${dir * 20}deg)`;
+            card.style.opacity = '0';
+
+            setTimeout(() => {
+                card.style.transform = '';
+                card.style.opacity = '1';
+                renderCurrentCard();
+                updateProgress();
+
+                // Check for match
+                if (type === 'like' && swipes[next.name].parent1 === 'like' && swipes[next.name].parent2 === 'like') {
+                    showModal('Match! 💕', `You both love "${next.name}"!`);
+                }
+            }, 300);
+        }
+
+        function updateProgress() {
+            let swiped = 0;
+            NAMES.forEach(n => {
+                if (swipes[n.name] && swipes[n.name][currentParent]) swiped++;
+            });
+            const pct = (swiped / NAMES.length) * 100;
+            document.getElementById('progress-text').textContent = `${swiped} / ${NAMES.length} names swiped`;
+            document.getElementById('progress-fill').style.width = pct + '%';
+        }
+
+        // ===== MATCHES =====
+        function renderMatches() {
+            const matches = NAMES.filter(n =>
+                swipes[n.name] && swipes[n.name].parent1 === 'like' && swipes[n.name].parent2 === 'like'
+            );
+
+            const list = document.getElementById('matches-list');
+            const placeholder = document.getElementById('matches-placeholder');
+
+            if (matches.length === 0) {
+                list.innerHTML = '';
+                placeholder.classList.remove('hidden');
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+            list.innerHTML = matches.map(n => `
+                <div class="match-item">
+                    <div class="match-item-content">
+                        <div class="match-item-left">
+                            <span class="match-item-name">${n.name}</span>
+                            <span class="gender-badge ${n.gender}">${n.gender}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== INIT =====
+        loadData();
+
+        document.getElementById('start-btn').onclick = () => {
+            showView('swiping');
+            renderCurrentCard();
+            updateProgress();
+        };
+
+        document.getElementById('like-btn').onclick = () => handleSwipe('like');
+        document.getElementById('dislike-btn').onclick = () => handleSwipe('dislike');
+
+        document.getElementById('parent-switcher').onclick = toggleParent;
+
+        document.getElementById('nav-swipe-btn').onclick = () => {
+            showView('swiping');
+            document.getElementById('nav-swipe-btn').classList.add('active');
+            document.getElementById('nav-matches-btn').classList.remove('active');
+        };
+
+        document.getElementById('nav-matches-btn').onclick = () => {
+            showView('matches');
+            renderMatches();
+            document.getElementById('nav-matches-btn').classList.add('active');
+            document.getElementById('nav-swipe-btn').classList.remove('active');
+        };
+
+        document.getElementById('modal-overlay').onclick = (e) => {
+            if (e.target.id === 'modal-overlay') hideModal();
+        };
+
+        console.log('✅ Name Date Simple loaded! Ready to use.');
+        console.log('📊 Total names:', NAMES.length);
+    </script>
+</body>
+</html>

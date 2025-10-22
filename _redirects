@@ -1,0 +1,5 @@
+# Netlify Redirects for Name Date SPA
+# This ensures all routes are handled by index.html
+
+# SPA fallback - serve index.html for all routes
+/*    /index.html   200
